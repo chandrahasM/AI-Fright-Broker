@@ -1,0 +1,96 @@
+[
+  {
+    "case_id": "VC0001",
+    "description": "Carrier calls to counter a load rate",
+    "message": "Yeah hi, this is Mike calling from FastLane Express, MC number five five six six seven seven. I'm calling about load number two nine zero zero one zero five five, I saw it posted on the board. We can definitely run it but not at your posted rate. We're looking at eighteen hundred dollars, that's our floor for that run. Let me know if you can work with that.",
+    "from_name": "Mike - FastLane Express",
+    "mc_number": "556677",
+    "load_reference": "29001055",
+    "expected_output": {
+      "intent": "counter_offer",
+      "mc_number": "556677",
+      "load_id": "29001055",
+      "equipment_type": null,
+      "quoted_rate": 1800,
+      "availability_status": true,
+      "missing_fields": []
+    },
+    "expected_tools": ["get_load_details"],
+    "min_relevancy": 0.7,
+    "min_groundedness": 0.8
+  },
+  {
+    "case_id": "VC0002",
+    "description": "Carrier announces truck availability on a lane",
+    "message": "Hi good morning, this is Sarah from Midwest Carriers, our MC is four four three three two two. I'm calling because we have a box truck free in Pennsylvania starting next Tuesday and we're looking to head toward Maryland or Delaware. Just checking if you guys have any loads going that direction for a box truck?",
+    "from_name": "Sarah - Midwest Carriers",
+    "mc_number": "443322",
+    "expected_output": {
+      "intent": "availability",
+      "mc_number": "443322",
+      "load_id": null,
+      "equipment_type": "Box Truck",
+      "quoted_rate": null,
+      "availability_status": true,
+      "missing_fields": ["load_id"]
+    },
+    "expected_tools": ["get_carrier_profile"],
+    "min_relevancy": 0.7,
+    "min_groundedness": 0.7
+  },
+  {
+    "case_id": "VC0003",
+    "description": "Carrier asks about historical per-mile rates on a lane",
+    "message": "Hey I'm calling to ask about rates on the PA to NJ lane with box trucks. I've been running that lane a lot lately and I feel like rates have been dropping. What kind of per-mile rates have you guys been seeing for that lane over the last month or so? Just trying to gauge whether it's still worth running.",
+    "equipment_mentioned": "Box Truck",
+    "expected_output": {
+      "intent": "rate_quote",
+      "mc_number": null,
+      "load_id": null,
+      "equipment_type": "Box Truck",
+      "quoted_rate": null,
+      "availability_status": null,
+      "missing_fields": ["mc_number", "load_id"]
+    },
+    "expected_tools": ["get_rate_history"],
+    "min_relevancy": 0.7,
+    "min_groundedness": 0.8
+  },
+  {
+    "case_id": "VC0004",
+    "description": "Carrier asks specific load questions about pickup and requirements",
+    "message": "Hi this is John calling, MC seven seven four three two one. I'm calling about load number two nine zero zero one zero six two. I wanted to know, is there a liftgate requirement at the delivery location? And also what time is the pickup window in the morning? We need to plan our driver's schedule around it.",
+    "from_name": "John",
+    "mc_number": "774321",
+    "load_reference": "29001062",
+    "expected_output": {
+      "intent": "load_question",
+      "mc_number": "774321",
+      "load_id": "29001062",
+      "equipment_type": null,
+      "quoted_rate": null,
+      "availability_status": null,
+      "missing_fields": []
+    },
+    "expected_tools": ["get_load_details", "get_carrier_profile"],
+    "min_relevancy": 0.8,
+    "min_groundedness": 0.8
+  },
+  {
+    "case_id": "VC0005",
+    "description": "New carrier calling to onboard — no MC or load mentioned",
+    "message": "Hi there, I'm a new owner-operator and I'm looking to start hauling for your company. I have a sprinter van. What do I need to do to get set up as a carrier with Goodlane? What paperwork do you need from me?",
+    "expected_output": {
+      "intent": "information_request",
+      "mc_number": null,
+      "load_id": null,
+      "equipment_type": "Sprinter Van",
+      "quoted_rate": null,
+      "availability_status": null,
+      "missing_fields": ["mc_number", "load_id"]
+    },
+    "expected_tools": [],
+    "min_relevancy": 0.7,
+    "min_groundedness": 0.7
+  }
+]

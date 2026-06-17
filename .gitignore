@@ -1,0 +1,32 @@
+# Python
+backend/venv/
+backend/__pycache__/
+backend/**/__pycache__/
+backend/**/*.pyc
+backend/logs/
+*.pyc
+*.pyo
+
+# Environment files — never commit secrets
+.env
+backend/.env
+frontend/.env
+
+# Node
+frontend/node_modules/
+frontend/dist/
+frontend/dist-ssr/
+*.local
+
+# Editor
+.vscode/
+.idea/
+.DS_Store
+*.suo
+*.sln
+
+# Eval results (generated output)
+evals/results.json
+
+# OS
+Thumbs.db
