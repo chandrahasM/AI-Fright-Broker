@@ -30,8 +30,10 @@ from app.repositories.voice_repository import VoiceRepository
 
 logger = logging.getLogger(__name__)
 
-# Fields that must be present for auto-processing without broker review
-REQUIRED_FIELDS = {"mc_number", "load_id"}
+# load_id is only required when the call is about a specific load.
+# Availability, rate_quote, general_inquiry, and information_request calls
+# never have a load_id — flagging them as needs_review is a false positive.
+_LOAD_REQUIRED_INTENTS = {"counter_offer", "load_question", "booking_interest"}
 
 # gpt-4o-transcribe limit: 25 MB per file
 MAX_FILE_SIZE_BYTES = 25 * 1024 * 1024
@@ -105,9 +107,11 @@ class VoiceProcessingService:
         # Step 4 — Phase 1 extraction (reuse same agent)
         extraction = self.agent.extract(email)
 
-        needs_review = bool(extraction.missing_fields) or any(
-            f in extraction.missing_fields for f in REQUIRED_FIELDS
-        )
+        actionable_missing = set(extraction.missing_fields)
+        if extraction.intent not in _LOAD_REQUIRED_INTENTS:
+            actionable_missing.discard("load_id")
+
+        needs_review = bool(actionable_missing)
         processing_status = "needs_review" if needs_review else "processed"
 
         # Persist extraction — use call_id as email_id key (TEXT field, no schema change needed)

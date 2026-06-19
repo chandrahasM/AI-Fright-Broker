@@ -21,8 +21,10 @@ from app.repositories.interaction_repository import InteractionRepository
 
 logger = logging.getLogger(__name__)
 
-# Fields that must be present for auto-processing without broker review
-REQUIRED_FIELDS = {"mc_number", "load_id"}
+# load_id is only meaningful when the carrier is referencing a specific load.
+# For availability, rate_quote, general_inquiry, and information_request the
+# absence of a load_id is expected — do not flag those as needs_review.
+_LOAD_REQUIRED_INTENTS = {"counter_offer", "load_question", "booking_interest"}
 
 
 class EmailProcessingService:
@@ -48,10 +50,14 @@ class EmailProcessingService:
         # Phase 1 — extraction
         extraction = self.agent.extract(email)
 
-        # Determine if broker review is needed
-        needs_review = bool(extraction.missing_fields) or any(
-            field in extraction.missing_fields for field in REQUIRED_FIELDS
-        )
+        # Determine if broker review is needed.
+        # Strip load_id from the missing set when the intent doesn't involve a
+        # specific load — its absence is expected, not a problem.
+        actionable_missing = set(extraction.missing_fields)
+        if extraction.intent not in _LOAD_REQUIRED_INTENTS:
+            actionable_missing.discard("load_id")
+
+        needs_review = bool(actionable_missing)
         processing_status = "needs_review" if needs_review else "processed"
 
         # Persist extraction

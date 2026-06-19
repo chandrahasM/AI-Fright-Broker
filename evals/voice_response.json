@@ -1,0 +1,688 @@
+[
+  {
+    "case_id": "VC0001",
+    "email_id": null,
+    "is_real_call": false,
+    "pass": true,
+    "extraction_pass": true,
+    "intent_pass": true,
+    "fields_pass": true,
+    "tool_pass": true,
+    "judge_pass": true,
+    "intent_expected": "counter_offer",
+    "intent_actual": "counter_offer",
+    "fields": {
+      "mc_number": {
+        "expected": "556677",
+        "actual": "556677",
+        "pass": true
+      },
+      "load_id": {
+        "expected": "29001055",
+        "actual": "29001055",
+        "pass": true
+      },
+      "equipment_type": {
+        "expected": null,
+        "actual": null,
+        "pass": true
+      },
+      "quoted_rate": {
+        "expected": 1800,
+        "actual": 1800.0,
+        "pass": true
+      },
+      "availability_status": {
+        "expected": true,
+        "actual": null,
+        "pass": false,
+        "soft": true
+      },
+      "missing_fields": {
+        "expected": [],
+        "actual": [],
+        "pass": true
+      }
+    },
+    "tools": {
+      "expected": [
+        "get_load_details"
+      ],
+      "actual": [
+        "get_load_details",
+        "get_carrier_profile"
+      ],
+      "pass": true,
+      "missing": []
+    },
+    "judge": {
+      "professionalism": 4,
+      "correctness": 4,
+      "groundedness": 5,
+      "overall": 4,
+      "reasoning": "The response is mostly professional but could be more concise, and it lacks specific details about the load that could enhance correctness."
+    },
+    "draft_preview": "Hi Mike,\n\nThanks for reaching out about load #29001055 and for your offer of $1,800. I appreciate you letting us know your position. Unfortunately, I\u2019m unable to pull up the specific load details righ",
+    "expected_output": {
+      "intent": "counter_offer",
+      "mc_number": "556677",
+      "load_id": "29001055",
+      "equipment_type": null,
+      "quoted_rate": 1800,
+      "availability_status": true,
+      "missing_fields": []
+    },
+    "actual_output": {
+      "carrier_name": "FastLane Express",
+      "mc_number": "556677",
+      "load_id": "29001055",
+      "equipment_type": null,
+      "quoted_rate": 1800.0,
+      "availability_status": null,
+      "origin_state": null,
+      "destination_state": null,
+      "intent": "counter_offer",
+      "questions_asked": [],
+      "missing_fields": [],
+      "confidence_score": 0.99
+    }
+  },
+  {
+    "case_id": "VC0002",
+    "email_id": null,
+    "is_real_call": false,
+    "pass": true,
+    "extraction_pass": true,
+    "intent_pass": true,
+    "fields_pass": true,
+    "tool_pass": true,
+    "judge_pass": true,
+    "intent_expected": "availability",
+    "intent_actual": "availability",
+    "fields": {
+      "mc_number": {
+        "expected": "443322",
+        "actual": "443322",
+        "pass": true
+      },
+      "load_id": {
+        "expected": null,
+        "actual": null,
+        "pass": true
+      },
+      "equipment_type": {
+        "expected": "Box Truck",
+        "actual": "Box Truck",
+        "pass": true
+      },
+      "quoted_rate": {
+        "expected": null,
+        "actual": null,
+        "pass": true
+      },
+      "availability_status": {
+        "expected": true,
+        "actual": true,
+        "pass": true,
+        "soft": true
+      },
+      "missing_fields": {
+        "expected": [],
+        "actual": [],
+        "pass": true
+      }
+    },
+    "tools": {
+      "expected": [
+        "search_loads"
+      ],
+      "actual": [
+        "search_loads",
+        "search_loads"
+      ],
+      "pass": true,
+      "missing": []
+    },
+    "judge": {
+      "professionalism": 5,
+      "correctness": 5,
+      "groundedness": 5,
+      "overall": 5,
+      "reasoning": "All dimensions are well addressed, and the response is appropriate and accurate."
+    },
+    "draft_preview": "Hi Sarah,\n\nThanks for reaching out and letting us know about your box truck availability in Pennsylvania next week. At the moment, we don\u2019t have any open box truck loads heading toward Maryland or Del",
+    "expected_output": {
+      "intent": "availability",
+      "mc_number": "443322",
+      "load_id": null,
+      "equipment_type": "Box Truck",
+      "quoted_rate": null,
+      "availability_status": true,
+      "missing_fields": []
+    },
+    "actual_output": {
+      "carrier_name": "Midwest Carriers",
+      "mc_number": "443322",
+      "load_id": null,
+      "equipment_type": "Box Truck",
+      "quoted_rate": null,
+      "availability_status": true,
+      "origin_state": "PA",
+      "destination_state": null,
+      "intent": "availability",
+      "questions_asked": [
+        "Do you have any loads going from Pennsylvania to Maryland or Delaware for a box truck?"
+      ],
+      "missing_fields": [],
+      "confidence_score": 1.0
+    }
+  },
+  {
+    "case_id": "VC0003",
+    "email_id": null,
+    "is_real_call": false,
+    "pass": true,
+    "extraction_pass": true,
+    "intent_pass": true,
+    "fields_pass": true,
+    "tool_pass": true,
+    "judge_pass": true,
+    "intent_expected": "rate_quote",
+    "intent_actual": "rate_quote",
+    "fields": {
+      "mc_number": {
+        "expected": null,
+        "actual": null,
+        "pass": true
+      },
+      "load_id": {
+        "expected": null,
+        "actual": null,
+        "pass": true
+      },
+      "equipment_type": {
+        "expected": "Box Truck",
+        "actual": "Box Truck",
+        "pass": true
+      },
+      "quoted_rate": {
+        "expected": null,
+        "actual": null,
+        "pass": true
+      },
+      "availability_status": {
+        "expected": null,
+        "actual": null,
+        "pass": true,
+        "soft": true
+      },
+      "missing_fields": {
+        "expected": [
+          "mc_number"
+        ],
+        "actual": [
+          "mc_number"
+        ],
+        "pass": true
+      }
+    },
+    "tools": {
+      "expected": [
+        "get_rate_history"
+      ],
+      "actual": [
+        "get_rate_history"
+      ],
+      "pass": true,
+      "missing": []
+    },
+    "judge": {
+      "professionalism": 4,
+      "correctness": 3,
+      "groundedness": 4,
+      "overall": 3,
+      "reasoning": "The response lacks specific rate information requested by the carrier, which affects correctness and overall quality."
+    },
+    "draft_preview": "Hi there,\n\nThanks for reaching out about the PA to NJ box truck lane. I checked our system, but unfortunately, we don\u2019t have enough rate history for this specific lane and equipment type over the last",
+    "expected_output": {
+      "intent": "rate_quote",
+      "mc_number": null,
+      "load_id": null,
+      "equipment_type": "Box Truck",
+      "quoted_rate": null,
+      "availability_status": null,
+      "missing_fields": [
+        "mc_number"
+      ]
+    },
+    "actual_output": {
+      "carrier_name": null,
+      "mc_number": null,
+      "load_id": null,
+      "equipment_type": "Box Truck",
+      "quoted_rate": null,
+      "availability_status": null,
+      "origin_state": "PA",
+      "destination_state": "NJ",
+      "intent": "rate_quote",
+      "questions_asked": [
+        "What kind of per-mile rates have you guys been seeing for that lane over the last month or so?"
+      ],
+      "missing_fields": [
+        "mc_number"
+      ],
+      "confidence_score": 0.95
+    }
+  },
+  {
+    "case_id": "VC0004",
+    "email_id": null,
+    "is_real_call": false,
+    "pass": false,
+    "extraction_pass": true,
+    "intent_pass": true,
+    "fields_pass": true,
+    "tool_pass": false,
+    "judge_pass": true,
+    "intent_expected": "load_question",
+    "intent_actual": "load_question",
+    "fields": {
+      "mc_number": {
+        "expected": "774321",
+        "actual": "774321",
+        "pass": true
+      },
+      "load_id": {
+        "expected": "29001062",
+        "actual": "29001062",
+        "pass": true
+      },
+      "equipment_type": {
+        "expected": null,
+        "actual": null,
+        "pass": true
+      },
+      "quoted_rate": {
+        "expected": null,
+        "actual": null,
+        "pass": true
+      },
+      "availability_status": {
+        "expected": null,
+        "actual": null,
+        "pass": true,
+        "soft": true
+      },
+      "missing_fields": {
+        "expected": [],
+        "actual": [],
+        "pass": true
+      }
+    },
+    "tools": {
+      "expected": [
+        "get_load_details",
+        "get_carrier_profile"
+      ],
+      "actual": [
+        "get_load_details"
+      ],
+      "pass": false,
+      "missing": [
+        "get_carrier_profile"
+      ]
+    },
+    "judge": {
+      "professionalism": 4,
+      "correctness": 3,
+      "groundedness": 4,
+      "overall": 3,
+      "reasoning": "The response lacks specific answers to the carrier's questions, which affects correctness and overall quality."
+    },
+    "draft_preview": "Hi John,\n\nThanks for reaching out about load 29001062. At this time, I don\u2019t have the specific details on whether a liftgate is required at the delivery or the pickup window for this load. Let me conf",
+    "expected_output": {
+      "intent": "load_question",
+      "mc_number": "774321",
+      "load_id": "29001062",
+      "equipment_type": null,
+      "quoted_rate": null,
+      "availability_status": null,
+      "missing_fields": []
+    },
+    "actual_output": {
+      "carrier_name": null,
+      "mc_number": "774321",
+      "load_id": "29001062",
+      "equipment_type": null,
+      "quoted_rate": null,
+      "availability_status": null,
+      "origin_state": null,
+      "destination_state": null,
+      "intent": "load_question",
+      "questions_asked": [
+        "Is there a liftgate requirement at the delivery location?",
+        "What time is the pickup window in the morning?"
+      ],
+      "missing_fields": [],
+      "confidence_score": 0.99
+    }
+  },
+  {
+    "case_id": "VC0005",
+    "email_id": null,
+    "is_real_call": false,
+    "pass": true,
+    "extraction_pass": true,
+    "intent_pass": true,
+    "fields_pass": true,
+    "tool_pass": true,
+    "judge_pass": true,
+    "intent_expected": "information_request",
+    "intent_actual": "information_request",
+    "fields": {
+      "mc_number": {
+        "expected": null,
+        "actual": null,
+        "pass": true
+      },
+      "load_id": {
+        "expected": null,
+        "actual": null,
+        "pass": true
+      },
+      "equipment_type": {
+        "expected": "Sprinter Van",
+        "actual": "Sprinter Van",
+        "pass": true
+      },
+      "quoted_rate": {
+        "expected": null,
+        "actual": null,
+        "pass": true
+      },
+      "availability_status": {
+        "expected": null,
+        "actual": null,
+        "pass": true,
+        "soft": true
+      },
+      "missing_fields": {
+        "expected": [],
+        "actual": [],
+        "pass": true
+      }
+    },
+    "tools": {
+      "expected": [],
+      "actual": [],
+      "pass": true,
+      "missing": []
+    },
+    "judge": {
+      "professionalism": 5,
+      "correctness": 5,
+      "groundedness": 5,
+      "overall": 5,
+      "reasoning": "All aspects of the response are accurate and relevant to the carrier's questions."
+    },
+    "draft_preview": "Hi there,\n\nThanks for reaching out and your interest in hauling for Goodlane! To get set up as a carrier with us, you\u2019ll need to provide your MC/DOT authority, W-9 form, and proof of insurance. If you",
+    "expected_output": {
+      "intent": "information_request",
+      "mc_number": null,
+      "load_id": null,
+      "equipment_type": "Sprinter Van",
+      "quoted_rate": null,
+      "availability_status": null,
+      "missing_fields": []
+    },
+    "actual_output": {
+      "carrier_name": null,
+      "mc_number": null,
+      "load_id": null,
+      "equipment_type": "Sprinter Van",
+      "quoted_rate": null,
+      "availability_status": null,
+      "origin_state": null,
+      "destination_state": null,
+      "intent": "information_request",
+      "questions_asked": [
+        "What do I need to do to get set up as a carrier with Goodlane?",
+        "What paperwork do you need from me?"
+      ],
+      "missing_fields": [],
+      "confidence_score": 1.0
+    }
+  },
+  {
+    "case_id": "VC-5762",
+    "email_id": null,
+    "is_real_call": true,
+    "pass": true,
+    "extraction_pass": true,
+    "intent_pass": true,
+    "fields_pass": true,
+    "tool_pass": true,
+    "judge_pass": true,
+    "intent_expected": null,
+    "intent_actual": "counter_offer",
+    "fields": {},
+    "tools": {
+      "expected": [],
+      "actual": [
+        "get_carrier_profile"
+      ],
+      "pass": true,
+      "missing": []
+    },
+    "judge": {
+      "professionalism": 5,
+      "correctness": 4,
+      "groundedness": 5,
+      "overall": 4,
+      "reasoning": "The response is mostly correct but lacks the specific load ID, which is missing from the structured data."
+    },
+    "draft_preview": "Hi Priyanka,\n\nThanks for your call and for clarifying your rate needs on the NJ-CT sprinter van run. I\u2019ve noted your $420 minimum. Since you\u2019ve worked this lane with us before and always provide solid",
+    "input": {
+      "call_id": "VC-20260617074616-5762",
+      "transcript_length": 1035,
+      "transcript_preview": "Thanks for calling Goodlane Dispatch, this is Mike.\n\nHey Mike, yeah this is Priyanka from Northbound Express LLC, calling about that sprinter van load, the NJCT run.\n\nSure, which load are you looking at?\n\nUh, I don't have the number in front of me but it's, uh, picking up in the next day or two. You"
+    },
+    "processing_status": "needs_review"
+  },
+  {
+    "case_id": "VC-D196",
+    "email_id": null,
+    "is_real_call": true,
+    "pass": true,
+    "extraction_pass": true,
+    "intent_pass": true,
+    "fields_pass": true,
+    "tool_pass": true,
+    "judge_pass": true,
+    "intent_expected": "booking_interest",
+    "intent_actual": "booking_interest",
+    "fields": {
+      "mc_number": {
+        "expected": "44098-7",
+        "actual": "44098-7",
+        "pass": true
+      },
+      "load_id": {
+        "expected": null,
+        "actual": null,
+        "pass": true
+      },
+      "equipment_type": {
+        "expected": "Box Truck",
+        "actual": "Box Truck",
+        "pass": true
+      },
+      "quoted_rate": {
+        "expected": null,
+        "actual": null,
+        "pass": true
+      },
+      "availability_status": {
+        "expected": true,
+        "actual": null,
+        "pass": false,
+        "soft": true
+      },
+      "missing_fields": {
+        "expected": [
+          "load_id"
+        ],
+        "actual": [
+          "load_id"
+        ],
+        "pass": true
+      }
+    },
+    "tools": {
+      "expected": [
+        "get_carrier_profile"
+      ],
+      "actual": [
+        "get_carrier_profile"
+      ],
+      "pass": true,
+      "missing": []
+    },
+    "judge": {
+      "professionalism": 5,
+      "correctness": 4,
+      "groundedness": 5,
+      "overall": 4,
+      "reasoning": "The response is mostly correct but lacks the specific load ID, which is a key detail missing from the communication."
+    },
+    "draft_preview": "Hi Denise,\n\nThanks for confirming your MC number. The PA to NJ box truck load is still available for pick-up tomorrow, and your driver being in the area works perfectly. I\u2019ll send over the full load d",
+    "expected_output": {
+      "intent": "booking_interest",
+      "mc_number": "44098-7",
+      "load_id": null,
+      "equipment_type": "Box Truck",
+      "quoted_rate": null,
+      "availability_status": true,
+      "missing_fields": [
+        "load_id"
+      ]
+    },
+    "actual_output": {
+      "intent": "booking_interest",
+      "mc_number": "44098-7",
+      "load_id": null,
+      "equipment_type": "Box Truck",
+      "quoted_rate": null,
+      "availability_status": null,
+      "missing_fields": [
+        "load_id"
+      ],
+      "questions_asked": []
+    },
+    "input": {
+      "call_id": "VC-20260617074618-D196",
+      "transcript_length": 605,
+      "transcript_preview": "Good Lane Dispatch, this is Sarah.\n\nHey Sarah, it's Denise over at Swift Lane Transport LLC, checking in on that PA New Jersey box truck load. Still open?\n\nLet me pull it up. Can I get your MC number first?\n\nSure, it's hold on, 44098-7? Yeah, 44098-7.\n\nOkay, Swift Lane Transport LLC. Yeah, that PA N"
+    },
+    "processing_status": "needs_review"
+  },
+  {
+    "case_id": "VC-C49A",
+    "email_id": null,
+    "is_real_call": true,
+    "pass": true,
+    "extraction_pass": true,
+    "intent_pass": true,
+    "fields_pass": true,
+    "tool_pass": true,
+    "judge_pass": true,
+    "intent_expected": "counter_offer",
+    "intent_actual": "counter_offer",
+    "fields": {
+      "mc_number": {
+        "expected": "1480355",
+        "actual": "1480355",
+        "pass": true
+      },
+      "load_id": {
+        "expected": null,
+        "actual": null,
+        "pass": true
+      },
+      "equipment_type": {
+        "expected": "Sprinter Van",
+        "actual": "Sprinter Van",
+        "pass": true
+      },
+      "quoted_rate": {
+        "expected": 380.0,
+        "actual": 380.0,
+        "pass": true
+      },
+      "availability_status": {
+        "expected": true,
+        "actual": true,
+        "pass": true,
+        "soft": true
+      },
+      "missing_fields": {
+        "expected": [
+          "load_id"
+        ],
+        "actual": [
+          "load_id"
+        ],
+        "pass": true
+      }
+    },
+    "tools": {
+      "expected": [
+        "get_rate_history"
+      ],
+      "actual": [
+        "get_rate_history"
+      ],
+      "pass": true,
+      "missing": []
+    },
+    "judge": {
+      "professionalism": 4,
+      "correctness": 4,
+      "groundedness": 4,
+      "overall": 4,
+      "reasoning": "The response is mostly correct but lacks the specific load ID and could be more concise."
+    },
+    "draft_preview": "Hi Lily,\n\nThanks for reaching out about the NJ to NY sprinter van load. I checked our rate history for this lane and equipment, but unfortunately, we don't have enough recent data to provide an averag",
+    "expected_output": {
+      "intent": "counter_offer",
+      "mc_number": "1480355",
+      "load_id": null,
+      "equipment_type": "Sprinter Van",
+      "quoted_rate": 380.0,
+      "availability_status": true,
+      "missing_fields": [
+        "load_id"
+      ]
+    },
+    "actual_output": {
+      "intent": "counter_offer",
+      "mc_number": "1480355",
+      "load_id": null,
+      "equipment_type": "Sprinter Van",
+      "quoted_rate": 380.0,
+      "availability_status": true,
+      "missing_fields": [
+        "load_id"
+      ],
+      "questions_asked": [
+        "If there's any flexibility on the rate"
+      ]
+    },
+    "input": {
+      "call_id": "VC-20260617074620-C49A",
+      "transcript_length": 382,
+      "transcript_preview": "Hey, this is Lily from Demix Transport. MC number 1,480,355. Calling about the sprinter van load you have posted on the New Jersey New York lane. I saw the rate is $340 but we really need at least $380 on that run. If there's any flexibility give me a call back or shoot me an email. We're available "
+    },
+    "processing_status": "needs_review"
+  }
+]

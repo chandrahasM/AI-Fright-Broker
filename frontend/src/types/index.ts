@@ -156,5 +156,6 @@ export interface ChatExtraction {
 export interface ChatResponse {
   email_id: string;
   extraction: ChatExtraction;
-  draft: string;
+  answer: string;       // direct 2-4 sentence answer shown in the UI bubble
+  draft_email: string;  // full email-style draft shown only in "View all details"
 }

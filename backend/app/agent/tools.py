@@ -1,12 +1,19 @@
 """
 Agent tool definitions and executor.
 
+Two tool sets:
+  CARRIER_TOOL_DEFINITIONS  — safe for inbound carrier email processing.
+                              Only point lookups by known ID. No table scans.
+  INTERNAL_TOOL_DEFINITIONS — for the internal chat/ops endpoint.
+                              Includes search_loads for lane/status queries.
+
 Tool definitions follow the OpenAI function-calling schema.
 ToolExecutor holds the business logic for each tool, backed by repositories.
 """
 import json
 import logging
 import time
+from collections import Counter
 
 from app.repositories.carrier_repository import CarrierRepository
 from app.repositories.load_repository import LoadRepository
@@ -15,10 +22,10 @@ from app.repositories.rate_history_repository import RateHistoryRepository
 logger = logging.getLogger(__name__)
 
 # ---------------------------------------------------------------------------
-# OpenAI tool schemas
+# OpenAI tool schemas — carrier-safe (used in email / voice processing)
 # ---------------------------------------------------------------------------
 
-TOOL_DEFINITIONS: list[dict] = [
+CARRIER_TOOL_DEFINITIONS: list[dict] = [
     {
         "type": "function",
         "name": "get_load_details",
@@ -130,6 +137,53 @@ TOOL_DEFINITIONS: list[dict] = [
     },
 ]
 
+# ---------------------------------------------------------------------------
+# Internal-only tools (chat / ops endpoint — never used for carrier emails)
+# ---------------------------------------------------------------------------
+
+_SEARCH_LOADS_DEFINITION: dict = {
+    "type": "function",
+    "name": "search_loads",
+    "description": (
+        "Search the Goodlane load board for loads matching any combination of "
+        "origin state, destination state, equipment type, or status. "
+        "Use this for operational questions like: 'any open loads from PA to NJ?', "
+        "'how many loads are covered this week?', 'show me all flatbed loads'. "
+        "Returns a count summary AND a sample of matching loads. "
+        "Do NOT use this for carrier-facing email responses — only for internal ops queries."
+    ),
+    "parameters": {
+        "type": "object",
+        "properties": {
+            "origin_state": {
+                "anyOf": [{"type": "string"}, {"type": "null"}],
+                "description": "Two-letter origin state code (e.g. 'PA'). Null to match any.",
+            },
+            "destination_state": {
+                "anyOf": [{"type": "string"}, {"type": "null"}],
+                "description": "Two-letter destination state code (e.g. 'NJ'). Null to match any.",
+            },
+            "equipment_type": {
+                "anyOf": [{"type": "string"}, {"type": "null"}],
+                "description": "Equipment type (e.g. 'Box Truck', 'Flatbed'). Null to match any.",
+            },
+            "status": {
+                "anyOf": [{"type": "string"}, {"type": "null"}],
+                "description": "Load status filter: 'open', 'covered', 'delivered', or null for all.",
+            },
+        },
+        "required": ["origin_state", "destination_state", "equipment_type", "status"],
+        "additionalProperties": False,
+    },
+    "strict": True,
+}
+
+# Full set available to internal chat — carrier tools + search
+INTERNAL_TOOL_DEFINITIONS: list[dict] = CARRIER_TOOL_DEFINITIONS + [_SEARCH_LOADS_DEFINITION]
+
+# Backwards-compatible alias so existing imports keep working unchanged
+TOOL_DEFINITIONS = CARRIER_TOOL_DEFINITIONS
+
 
 # ---------------------------------------------------------------------------
 # Tool executor
@@ -172,6 +226,8 @@ class ToolExecutor:
             return self._get_market_rate(**arguments)
         if name == "get_rate_history":
             return self._get_rate_history(**arguments)
+        if name == "search_loads":
+            return self._search_loads(**arguments)
         raise ValueError(f"Unknown tool: {name}")
 
     def _get_load_details(self, load_id: str) -> dict:
@@ -292,5 +348,61 @@ class ToolExecutor:
                     "load_volume": r.get("load_volume"),
                 }
                 for r in rows
+            ],
+        }
+
+    def _search_loads(
+        self,
+        origin_state: str | None,
+        destination_state: str | None,
+        equipment_type: str | None,
+        status: str | None,
+    ) -> dict:
+        rows = self.load_repo.search(
+            origin_state=origin_state,
+            destination_state=destination_state,
+            equipment_type=equipment_type,
+            status=status,
+            limit=20,
+        )
+
+        if not rows:
+            filters = ", ".join(filter(None, [
+                f"origin={origin_state}" if origin_state else None,
+                f"destination={destination_state}" if destination_state else None,
+                f"equipment={equipment_type}" if equipment_type else None,
+                f"status={status}" if status else None,
+            ]))
+            return {"total_count": 0, "summary": {}, "loads": [],
+                    "message": f"No loads found for: {filters or 'no filters'}"}
+
+        # Build aggregate summary so the LLM can answer count/breakdown questions
+        # without the model needing to count rows itself.
+        by_status = dict(Counter(r.get("status", "unknown") for r in rows))
+        by_equipment = dict(Counter(r.get("equipment_type", "unknown") for r in rows))
+        rates = [r["offered_rate_usd"] for r in rows if r.get("offered_rate_usd") is not None]
+
+        return {
+            "total_count": len(rows),
+            "summary": {
+                "by_status": by_status,
+                "by_equipment_type": by_equipment,
+                "avg_offered_rate_usd": round(sum(rates) / len(rates), 2) if rates else None,
+                "min_offered_rate_usd": round(min(rates), 2) if rates else None,
+                "max_offered_rate_usd": round(max(rates), 2) if rates else None,
+            },
+            # Cap sample to 5 loads — enough context for the LLM without dumping the table
+            "loads": [
+                {
+                    "load_id": r.get("load_id"),
+                    "origin": f"{r.get('origin_city', '')}, {r.get('origin_state', '')}",
+                    "destination": f"{r.get('destination_city', '')}, {r.get('destination_state', '')}",
+                    "equipment_type": r.get("equipment_type"),
+                    "offered_rate_usd": r.get("offered_rate_usd"),
+                    "status": r.get("status"),
+                    "pickup_date": str(r.get("pickup_date", "")),
+                    "distance_miles": r.get("distance_miles"),
+                }
+                for r in rows[:5]
             ],
         }

@@ -80,6 +80,8 @@ flowchart TD
 
     Email --> InboxTab --> EmailRouter --> EmailService
     Voice --> VoiceTab --> VoiceRouter --> VoiceService
+    AgentTest -->|"free-form query"| ChatRouter
+    ChatRouter -->|"no DB — stateless"| Agent
     VoiceService --> Bucket
     VoiceService --> Whisper
     Whisper --> VoiceService
@@ -371,35 +373,64 @@ curl -X POST http://localhost:8000/api/voice-calls/upload \
 
 ## Evaluations
 
-The eval suite measures four dimensions:
+Email evals exercise the **production pipeline**: `POST /api/process-email` with `email_id` only. The backend loads the email from Supabase, runs Phase 1 extraction, Phase 2 tool calls + draft, and persists results.
 
-| Dimension | Method |
+### Prerequisites
+
+1. Backend running at `http://localhost:8000`
+2. Eval emails in Supabase — run [`evals/seed_emails.sql`](evals/seed_emails.sql) in the SQL Editor (starter set: CE0229, CE0255, CE0253, CE0233)
+3. `OPENAI_API_KEY` in `backend/.env` (required for LLM judge; use `--skip-judge` to skip)
+
+**Note:** Each eval run re-processes the email and overwrites `extracted_interactions`, `draft_responses`, and `processing_status` for that `email_id`.
+
+### Test file format
+
+[`evals/test_emails.json`](evals/test_emails.json) — full email record (must match DB) plus expectations:
+
+- `expected_output.intent` — agent taxonomy (`booking_interest`, `load_question`, etc.), not the dataset label
+- `dataset_intent` — optional original label (`confirm`, `terse`) for reference only
+- `expected_tools` — tools Phase 2 must call
+- `min_groundedness` / `min_overall` — per-case judge thresholds (default 3.5 / 3.0)
+
+### Metrics
+
+| Metric | Method |
 |---|---|
-| **Extraction accuracy** | Per-field exact / numeric (±$5) / set match |
-| **Tool coverage** | Did Phase 2 call every expected tool? |
-| **Relevancy** | LLM judge (gpt-4o-mini): does the draft address what was asked? |
-| **Groundedness** | LLM judge (gpt-4o-mini): does the draft avoid inventing facts? |
+| **Intent classification** | Exact match on `expected_output.intent` vs Phase 1 extraction |
+| **Field extraction** | `mc_number`, `load_id`, `equipment_type`, `quoted_rate` (±$5), `missing_fields` |
+| **Tool selection** | All names in `expected_tools` must appear in `tools_called` |
+| **Grounded draft rate** | LLM judge `groundedness` ≥ threshold (default 3.5/5) |
+| **End-to-end pass** | Extraction + tools + judge all pass |
 
-**Test cases:**
+### LLM judge (draft quality)
 
-- `evals/test_emails.json` — 12 email cases covering all 7 intent types + rate history + full-context (MC + load)
-- `evals/test_voice.json` — 5 voice transcript cases (spoken language, counter offers, rate history, load questions)
+Uses `gpt-4o-mini` to score each draft 1–5 on:
 
-**Run:**
+- **professionalism** — broker tone and format
+- **correctness** — references correct load, rate, and questions from the email
+- **groundedness** — no invented facts; claims trace to email + Phase 1 extraction
+- **overall** — send-as-is quality
+
+Judge input: carrier subject/body (from DB), Phase 1 extracted JSON, and draft text.
+
+### Run
 
 ```bash
 cd backend
 
-# Full eval with LLM judge
-python ../evals/run_evals.py
+# First 4 email cases with LLM judge
+python ../evals/run_evals.py --emails-only --limit 4
 
 # Skip judge (faster, no API cost)
-python ../evals/run_evals.py --skip-judge
+python ../evals/run_evals.py --emails-only --skip-judge
+
+# Verbose per-field breakdown
+python ../evals/run_evals.py --emails-only --verbose
 ```
 
-Results are written to `evals/results.json`. Exit code 0 = all pass.
+Results: [`evals/email_response.json`](evals/email_response.json) (per-case pass/fail, expected vs actual, judge scores 1–5). Exit code 0 = all pass.
 
-> The email cases fall back to `/api/chat` automatically if the email doesn't exist in the DB, so the eval can run without seed data.
+Voice evals (`evals/test_voice.json`) use `/api/chat` and are separate; rework planned later.
 
 ---
 
@@ -476,7 +507,9 @@ AI-Fright-Broker/
 │   ├── rate_history_insert.sql          721 rows of weekly lane rate data
 │   └── rate_history_setup.sql           rate_history table + initial seed
 └── evals/
-    ├── run_evals.py                     Eval runner (extraction + tools + LLM judge)
-    ├── test_emails.json                 12 email eval cases
-    └── test_voice.json                  5 voice transcript eval cases
+    ├── run_evals.py                     Eval runner (process-email + LLM judge)
+    ├── test_emails.json                 Email eval cases (real DB email_ids)
+    ├── seed_emails.sql                  INSERT starter eval emails into Supabase
+    ├── email_response.json              Email eval results (generated)
+    └── test_voice.json                  Voice transcript eval cases (separate)
 ```

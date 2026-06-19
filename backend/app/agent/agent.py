@@ -10,7 +10,7 @@ from dataclasses import dataclass, field
 
 from openai import OpenAI
 
-from app.agent.tools import TOOL_DEFINITIONS, ToolExecutor
+from app.agent.tools import CARRIER_TOOL_DEFINITIONS, ToolExecutor
 from app.config import settings
 from app.models.email import EmailRecord
 from app.models.extraction import ExtractionResult
@@ -140,23 +140,29 @@ _EXTRACTION_SCHEMA = {
 _EXTRACTION_SYSTEM_PROMPT = """You are a data extraction assistant for a freight brokerage.
 Extract structured information from carrier emails.
 
-Required fields (add to missing_fields if absent): mc_number, load_id.
-Optional fields: carrier_name, equipment_type, quoted_rate, availability_status.
+Intent classification — determine this first, it controls which fields are required:
+- counter_offer:       carrier is countering a specific posted rate on a load
+- load_question:       carrier has specific questions about a load (pickup address, lumper fee, requirements, hazmat, etc.)
+- booking_interest:    carrier wants to book or confirm a specific load
+- rate_quote:          carrier is asking about rates — either current lane rates OR historical/average/market rates
+- availability:        carrier is announcing truck availability on a lane, looking for loads
+- information_request: carrier wants info about becoming a carrier, onboarding, or required documents
+- general_inquiry:     partnership outreach, check-in, or anything that doesn't fit above
+
+Required fields by intent (add to missing_fields ONLY if the intent applies and the field is absent):
+- counter_offer, load_question, booking_interest:
+    → load_id is required (these messages are always about a specific load)
+    → mc_number is required
+- rate_quote, availability, general_inquiry:
+    → mc_number is required
+    → load_id is NOT required — do NOT add load_id to missing_fields for these intents
+- information_request:
+    → neither mc_number nor load_id is required — new carriers may have neither yet
 
 Lane extraction:
 - origin_state: extract two-letter state code if carrier mentions origin (e.g. "out of PA", "from Bethlehem PA" → "PA")
 - destination_state: extract two-letter state code if carrier mentions destination (e.g. "going to NJ", "toward New York" → "NY")
 - If only one direction is mentioned, extract what is available and leave the other null.
-
-Intent classification:
-- availability: carrier is offering truck availability on a lane
-- counter_offer: carrier is countering a specific posted rate on a load
-- rate_quote: carrier is asking about rates — either what Goodlane is currently offering,
-              OR what historical/average/market rates have been on a lane or for an equipment type
-- information_request: carrier wants info about becoming a carrier or general onboarding
-- booking_interest: carrier wants to book or confirm a specific load
-- load_question: carrier has specific questions about a load (pickup address, lumper fee, requirements, etc.)
-- general_inquiry: anything else
 
 Be precise. Only extract what is explicitly stated."""
 
@@ -184,15 +190,34 @@ Write a concise, professional response to the carrier:
 
 Do not invent information. Use only what the tools return."""
 
+# Used by the internal QnA chat to convert a broker email draft into a
+# concise direct answer for display in the UI bubble.
+_DIRECT_ANSWER_SYSTEM_PROMPT = """You are an internal assistant for Goodlane Logistics freight brokers.
+Convert the provided broker email draft into a short, direct answer (2–4 sentences max).
+
+Rules:
+- Answer the question directly — no greeting, no sign-off, no "Hi [name]"
+- Use plain language, not email formality
+- Include the key facts (rates, load IDs, counts, statuses) from the draft
+- If the draft says there is not enough data, say so plainly
+- Do not add information not present in the draft"""
+
 
 # ---------------------------------------------------------------------------
 # Agent
 # ---------------------------------------------------------------------------
 
 class FreightBrokerAgent:
-    def __init__(self, client: OpenAI, tool_executor: ToolExecutor) -> None:
+    def __init__(
+        self,
+        client: OpenAI,
+        tool_executor: ToolExecutor,
+        tools: list[dict] | None = None,
+    ) -> None:
         self.client = client
         self.tool_executor = tool_executor
+        # Default to the carrier-safe set; internal callers pass INTERNAL_TOOL_DEFINITIONS
+        self.tools = tools if tools is not None else CARRIER_TOOL_DEFINITIONS
 
     # ------------------------------------------------------------------
     # Phase 1: Structured extraction
@@ -274,7 +299,7 @@ class FreightBrokerAgent:
         )
         logger.debug(
             "Phase 2 › tools available: %s",
-            [t["name"] for t in TOOL_DEFINITIONS],
+            [t["name"] for t in self.tools],
         )
         logger.info("Phase 2 › calling OpenAI  model=%s", settings.openai_model)
 
@@ -284,7 +309,7 @@ class FreightBrokerAgent:
                 {"role": "system", "content": _DRAFT_SYSTEM_PROMPT},
                 {"role": "user", "content": user_content},
             ],
-            tools=TOOL_DEFINITIONS,
+            tools=self.tools,
         )
 
         _log_tokens(response, "Phase 2 iteration 0")
@@ -366,6 +391,29 @@ class FreightBrokerAgent:
         )
 
         return DraftResult(text=draft_text, tools_called=tools_called)
+
+    # ------------------------------------------------------------------
+    # Direct answer (internal QnA chat only)
+    # ------------------------------------------------------------------
+
+    def summarize_to_direct_answer(self, draft_text: str, questions_asked: list[str]) -> str:
+        """Convert a broker email draft into a short direct answer for internal UI display."""
+        questions_context = (
+            f"Questions asked: {', '.join(questions_asked)}\n\n" if questions_asked else ""
+        )
+        user_content = f"{questions_context}Email draft to convert:\n{draft_text}"
+
+        logger.info("Direct answer › converting draft to direct answer")
+        response = self.client.responses.create(
+            model=settings.openai_model,
+            input=[
+                {"role": "system", "content": _DIRECT_ANSWER_SYSTEM_PROMPT},
+                {"role": "user", "content": user_content},
+            ],
+        )
+        answer = self._get_text(response)
+        logger.info("Direct answer › done  length=%d chars", len(answer))
+        return answer
 
     # ------------------------------------------------------------------
     # Helpers

@@ -13,7 +13,7 @@ from fastapi import APIRouter, Depends, HTTPException
 from pydantic import BaseModel
 
 from app.agent.agent import FreightBrokerAgent
-from app.agent.tools import ToolExecutor
+from app.agent.tools import INTERNAL_TOOL_DEFINITIONS, ToolExecutor
 from app.dependencies import (
     get_carrier_repository,
     get_load_repository,
@@ -63,8 +63,9 @@ class ExtractionOut(BaseModel):
 class ChatResponse(BaseModel):
     email_id: str
     extraction: ExtractionOut
-    draft: str
-    tools_called: list[str] = []  # Phase 2 tool names in call order
+    answer: str        # direct 2-4 sentence answer for the UI bubble
+    draft_email: str   # full email-style draft shown only in "View all details"
+    tools_called: list[str] = []  # Phase 2 tool names, used by evals for tool accuracy
 
 
 # ---------------------------------------------------------------------------
@@ -104,11 +105,23 @@ def chat(
         carrier_repo=carrier_repo,
         rate_history_repo=rate_history_repo,
     )
-    agent = FreightBrokerAgent(client=openai_client, tool_executor=tool_executor)
+    # Internal chat gets the full tool set including search_loads.
+    # Carrier email processing always uses the default CARRIER_TOOL_DEFINITIONS.
+    agent = FreightBrokerAgent(
+        client=openai_client,
+        tool_executor=tool_executor,
+        tools=INTERNAL_TOOL_DEFINITIONS,
+    )
 
     try:
         extraction = agent.extract(email)
+        # Phase 2: generate email-style draft (calls tools)
         draft_result = agent.generate_draft(email, extraction)
+        # Convert the draft into a short direct answer for the UI bubble
+        direct_answer = agent.summarize_to_direct_answer(
+            draft_result.text,
+            extraction.questions_asked,
+        )
     except Exception as exc:
         logger.exception("Chat agent failed for email_id=%s", email_id)
         raise HTTPException(status_code=500, detail=f"Agent failed: {exc}")
@@ -116,6 +129,7 @@ def chat(
     return ChatResponse(
         email_id=email_id,
         extraction=ExtractionOut(**extraction.model_dump()),
-        draft=draft_result.text,
+        answer=direct_answer,
+        draft_email=draft_result.text,
         tools_called=draft_result.tools_called,
     )

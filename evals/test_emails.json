@@ -1,215 +1,102 @@
 [
   {
-    "email_id": "CE0042",
-    "subject": "Load #29372312 availability",
-    "body": "Hi team, we can do this load but not at $240. Our floor on this lane is $280. Please let us know if that works.",
-    "mc_number": "774321",
-    "load_reference": "29372312",
-    "equipment_mentioned": "Sprinter Van",
+    "email_id": "CE0229",
+    "timestamp": "2026-04-27T02:00:00Z",
+    "from_name": "Nkechi Adeyemi",
+    "from_email": "nkechi@sharparrowlogistics.com",
+    "to_email": "dispatch@goodlanelogistics.com",
+    "subject": "Confirmed \u2013 Load #29000873",
+    "body": "Agreed on $375. Driver confirmed for 2026-05-02. Please send all load details to this email.\n\nThanks,\nNkechi",
+    "mc_number": "109876",
+    "load_reference": "29000873",
+    "equipment_mentioned": "Box Truck",
+    "rate_quoted_usd": null,
+    "dataset_intent": "confirm",
     "expected_output": {
-      "intent": "counter_offer",
-      "mc_number": "774321",
-      "load_id": "29372312",
-      "equipment_type": "Sprinter Van",
-      "quoted_rate": 280,
-      "availability_status": true,
+      "intent": "booking_interest",
+      "mc_number": "109876",
+      "load_id": "29000873",
+      "equipment_type": "Box Truck",
+      "quoted_rate": 375,
       "missing_fields": []
-    }
+    },
+    "expected_tools": ["get_load_details"],
+    "min_groundedness": 3.5,
+    "min_overall": 3.0
   },
   {
-    "email_id": "CE0043",
-    "subject": "Rate inquiry TX to FL Dry Van",
-    "body": "Hello, we are interested in running loads from Texas to Florida with our dry van. What rates are you offering for this lane this week?",
-    "mc_number": "882910",
-    "load_reference": null,
-    "equipment_mentioned": "Dry Van",
-    "expected_output": {
-      "intent": "rate_quote",
-      "mc_number": "882910",
-      "load_id": null,
-      "equipment_type": "Dry Van",
-      "quoted_rate": null,
-      "availability_status": true,
-      "missing_fields": ["load_id"]
-    }
-  },
-  {
-    "email_id": "CE0044",
-    "subject": "Truck available Chicago area",
-    "body": "Good morning. We have a flatbed available in Chicago area starting June 22nd. Do you have any loads going to Ohio or Indiana? MC# 991234.",
-    "mc_number": "991234",
-    "load_reference": null,
+    "email_id": "CE0255",
+    "timestamp": "2026-04-09T21:00:00Z",
+    "from_name": "Rob Galloway",
+    "from_email": "rob@mountainstatetransport.net",
+    "to_email": "dispatch@goodlanelogistics.com",
+    "subject": "Flatbed available \u2013 Reading to Columbus",
+    "body": "Can do. What's the all-in?",
+    "mc_number": "1198743",
+    "load_reference": "29001048",
     "equipment_mentioned": "Flatbed",
-    "expected_output": {
-      "intent": "availability",
-      "mc_number": "991234",
-      "load_id": null,
-      "equipment_type": "Flatbed",
-      "quoted_rate": null,
-      "availability_status": true,
-      "missing_fields": ["load_id"]
-    }
-  },
-  {
-    "email_id": "CE0045",
-    "subject": "Question about load 20091234",
-    "body": "Hi, we saw load 20091234 on the board. Can you confirm the exact pickup address in Illinois and whether there is a lumper fee? MC 663389.",
-    "mc_number": "663389",
-    "load_reference": "20091234",
-    "equipment_mentioned": "Flatbed",
+    "rate_quoted_usd": null,
+    "dataset_intent": "terse",
     "expected_output": {
       "intent": "load_question",
-      "mc_number": "663389",
-      "load_id": "20091234",
+      "mc_number": "1198743",
+      "load_id": "29001048",
       "equipment_type": "Flatbed",
       "quoted_rate": null,
-      "availability_status": null,
-      "missing_fields": []
-    }
-  },
-  {
-    "email_id": "CE0046",
-    "subject": "Interested in load 30056789",
-    "body": "Hello Goodlane team, we want to book load 30056789. Our reefer is available and we are comfortable with the posted rate. How do we confirm? MC 991234.",
-    "mc_number": "991234",
-    "load_reference": "30056789",
-    "equipment_mentioned": "Reefer",
-    "expected_output": {
-      "intent": "booking_interest",
-      "mc_number": "991234",
-      "load_id": "30056789",
-      "equipment_type": "Reefer",
-      "quoted_rate": null,
-      "availability_status": true,
-      "missing_fields": []
-    }
-  },
-  {
-    "email_id": "CE0047",
-    "subject": "How do I get set up as a carrier?",
-    "body": "Hi there, I am a new carrier and I would like to know what I need to do to start hauling loads for Goodlane. What documents do you need?",
-    "mc_number": null,
-    "load_reference": null,
-    "equipment_mentioned": null,
-    "expected_output": {
-      "intent": "information_request",
-      "mc_number": null,
-      "load_id": null,
-      "equipment_type": null,
-      "quoted_rate": null,
-      "availability_status": null,
-      "missing_fields": ["mc_number", "load_id"]
-    }
-  },
-  {
-    "email_id": "CE0048",
-    "subject": "Re: Load 10045678 counter",
-    "body": "We can do load 10045678 CA to NV. Our rate is $350 for the dry van. Also, is there a TONU policy if the load gets cancelled? MC 882910.",
-    "mc_number": "882910",
-    "load_reference": "10045678",
-    "equipment_mentioned": "Dry Van",
-    "expected_output": {
-      "intent": "counter_offer",
-      "mc_number": "882910",
-      "load_id": "10045678",
-      "equipment_type": "Dry Van",
-      "quoted_rate": 350,
-      "availability_status": true,
-      "missing_fields": []
-    }
-  },
-  {
-    "email_id": "CE0049",
-    "subject": "General carrier partnership inquiry",
-    "body": "Hi Goodlane, Sunrise Logistics is looking to expand our carrier partnerships. We run Midwest lanes with box trucks and dry vans. Would love to connect.",
-    "mc_number": "445567",
-    "load_reference": null,
-    "equipment_mentioned": "Box Truck",
-    "expected_output": {
-      "intent": "general_inquiry",
-      "mc_number": "445567",
-      "load_id": null,
-      "equipment_type": "Box Truck",
-      "quoted_rate": null,
-      "availability_status": null,
-      "missing_fields": ["load_id"]
-    }
-  },
-  {
-    "email_id": "CE0050",
-    "subject": "Reefer available Pacific Northwest",
-    "body": "We have a reefer truck available in Seattle this Friday June 24th. Looking for loads heading south toward California or Oregon. MC 663389.",
-    "mc_number": "663389",
-    "load_reference": null,
-    "equipment_mentioned": "Reefer",
-    "expected_output": {
-      "intent": "availability",
-      "mc_number": "663389",
-      "load_id": null,
-      "equipment_type": "Reefer",
-      "quoted_rate": null,
-      "availability_status": true,
-      "missing_fields": ["load_id"]
-    }
-  },
-  {
-    "email_id": "CE0051",
-    "subject": "Rate check load 40078901",
-    "body": "Hi, checking on load 40078901. The posted rate of $180 seems low for a box truck on a same-day run. Is there any flexibility? MC 774321.",
-    "mc_number": "774321",
-    "load_reference": "40078901",
-    "equipment_mentioned": "Box Truck",
-    "expected_output": {
-      "intent": "counter_offer",
-      "mc_number": "774321",
-      "load_id": "40078901",
-      "equipment_type": "Box Truck",
-      "quoted_rate": 180,
-      "availability_status": true,
-      "missing_fields": []
-    },
-    "expected_tools": [],
-    "min_relevancy": 0.7,
-    "min_groundedness": 0.7
-  },
-  {
-    "email_id": "CE0052",
-    "subject": "PA to NJ Box Truck rates — what have rates been?",
-    "body": "Hi team, I run Box Trucks out of Pennsylvania going to New Jersey. What have per-mile rates been like on that lane over the last few weeks? Trying to decide if it is worth picking up loads in that corridor.",
-    "mc_number": "445521",
-    "load_reference": null,
-    "equipment_mentioned": "Box Truck",
-    "expected_output": {
-      "intent": "rate_quote",
-      "mc_number": "445521",
-      "load_id": null,
-      "equipment_type": "Box Truck",
-      "quoted_rate": null,
-      "availability_status": true,
-      "missing_fields": ["load_id"]
-    },
-    "expected_tools": ["get_rate_history"],
-    "min_relevancy": 0.7,
-    "min_groundedness": 0.8
-  },
-  {
-    "email_id": "CE0053",
-    "subject": "Booking load 29001091 — confirm details",
-    "body": "Hi Goodlane, this is Maria from Quick Cargo, MC 334412. We would like to book load 29001091. Our Sprinter Van is available and we are comfortable with the posted rate. Can you confirm the pickup details and our carrier rate?",
-    "mc_number": "334412",
-    "load_reference": "29001091",
-    "equipment_mentioned": "Sprinter Van",
-    "expected_output": {
-      "intent": "booking_interest",
-      "mc_number": "334412",
-      "load_id": "29001091",
-      "equipment_type": "Sprinter Van",
-      "quoted_rate": null,
-      "availability_status": true,
       "missing_fields": []
     },
     "expected_tools": ["get_load_details", "get_carrier_profile"],
-    "min_relevancy": 0.7,
-    "min_groundedness": 0.8
+    "min_groundedness": 3.5,
+    "min_overall": 3.0
+  },
+  {
+    "email_id": "CE0253",
+    "timestamp": "2026-04-08T13:00:00Z",
+    "from_name": "Marie Vale",
+    "from_email": "marie@bbkagent.com",
+    "to_email": "dispatch@goodlanelogistics.com",
+    "subject": "Flatbed available \u2013 Reading to Columbus",
+    "body": "Can do. What's the all-in?",
+    "mc_number": "166960",
+    "load_reference": "29001048",
+    "equipment_mentioned": "Box Truck",
+    "rate_quoted_usd": null,
+    "dataset_intent": "terse",
+    "expected_output": {
+      "intent": "load_question",
+      "mc_number": "166960",
+      "load_id": "29001048",
+      "equipment_type": "Box Truck",
+      "quoted_rate": null,
+      "missing_fields": []
+    },
+    "expected_tools": ["get_load_details", "get_carrier_profile"],
+    "min_groundedness": 3.5,
+    "min_overall": 3.0
+  },
+  {
+    "email_id": "CE0233",
+    "timestamp": "2026-04-26T21:00:00Z",
+    "from_name": "Baraka Mwangi",
+    "from_email": "baraka.tradewind@gmail.com",
+    "to_email": "dispatch@goodlanelogistics.com",
+    "subject": "Following up \u2013 load #29000873",
+    "body": "We're available. Rate?",
+    "mc_number": "219876",
+    "load_reference": "29000873",
+    "equipment_mentioned": "Sprinter Van",
+    "rate_quoted_usd": null,
+    "dataset_intent": "inquiry",
+    "expected_output": {
+      "intent": "load_question",
+      "mc_number": "219876",
+      "load_id": "29000873",
+      "equipment_type": "Sprinter Van",
+      "quoted_rate": null,
+      "missing_fields": []
+    },
+    "expected_tools": ["get_load_details", "get_carrier_profile"],
+    "min_groundedness": 3.5,
+    "min_overall": 3.0
   }
 ]
